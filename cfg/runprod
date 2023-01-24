@@ -1,0 +1,12 @@
+#!/bin/sh
+
+groupmod -g $(stat -c '%u' /app) www-data
+usermod -u $(stat -c '%u' /app) -g $(stat -c '%u' /app) www-data
+
+test -f /app/vendor/autoload.php || composer install
+
+php artisan config:clear && \
+  php artisan cache:clear && \
+  composer dump-autoload && \
+  php artisan route:clear && \
+  php artisan migrate
